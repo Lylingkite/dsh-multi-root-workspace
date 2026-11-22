@@ -1,0 +1,4 @@
+*:Zone.Identifier
+*.tgz
+node_modules/
+__pycache__/

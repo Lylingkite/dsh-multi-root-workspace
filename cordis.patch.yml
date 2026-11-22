@@ -1,0 +1,7 @@
+- id: file-reference-local
+  disabled: true
+- insert:
+    - id: local-multi-root-workspace
+      name: '@local/dsh-multi-root'
+      config:
+        workspaces: {}
