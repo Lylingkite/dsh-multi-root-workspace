@@ -1,8 +1,8 @@
 {
   "name": "@local/dsh-multi-root",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
-    "test": "node tests/client-delete.test.mjs && node tests/backspace.test.mjs && node tests/search.test.mjs && node tests/completion.test.mjs && node tests/primary-workspace.test.mjs && node tests/wsl.test.mjs && node tests/wsl-world.test.mjs && node tests/wsl-search.test.mjs"
+    "test": "node tests/client-delete.test.mjs && node tests/backspace.test.mjs && node tests/search.test.mjs && node tests/completion.test.mjs && node tests/primary-workspace.test.mjs && node tests/wsl.test.mjs && node tests/wsl-world.test.mjs && node tests/wsl-search.test.mjs && node tests/folder-summary.test.mjs && node tests/client-summary.test.mjs && node tests/summary-persistence.test.mjs"
   },
   "description": "Edit workspace folders and mention files across multiple roots",
   "private": true,
@@ -16,6 +16,7 @@
   "files": [
     "index.js",
     "search.js",
+    "folder-summary.js",
     "client.js",
     "cordis.patch.yml",
     "locale/*.json",

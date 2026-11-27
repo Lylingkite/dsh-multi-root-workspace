@@ -16,7 +16,7 @@ export function linuxFromHost(p, distro) {
 }
 // A read-only JSON helper runs in the selected distribution. No command fragments come from paths.
 export const PYTHON = String.raw`
-import os, sys, json, base64, stat, subprocess
+import os, sys, re, json, base64, stat, subprocess
 from collections import deque
 from itertools import islice
 r=json.loads(base64.b64decode(sys.argv[1])); action=r['action']
@@ -44,6 +44,19 @@ elif action=='browse':
    if kind!='other': entries.append({'name':e.name,'path':os.path.join(p,e.name),'kind':kind})
  entries.sort(key=lambda e:(e['kind']!='directory',e['name']))
  out={'path':p,'parent':os.path.dirname(p) if p!='/' else None,'entries':entries,'truncated':len(entries)>=1000}
+elif action=='describe':
+ # Bounded top-level names only. No file contents, no child symlinks, no network.
+ p=directory(r['path']); names=[]; seen=set(); sensitive=re.compile(r'(?:^|[._-])(?:env|npmrc|yarnrc|pypirc|netrc|htpasswd|git-credentials|gitconfig|id_rsa|id_dsa|id_ecdsa|id_ed25519|credentials?|secrets?|tokens?|keystore)(?:[._-]|$)|(?:\.pem|\.key|\.p12|\.pfx|\.jks)$',re.I)
+ with os.scandir(p) as scan:
+  for e in islice(scan, 1000):
+   if len(names)>=200: break
+   if e.name.startswith('.') or sensitive.search(e.name) or any(ord(c)<32 for c in e.name) or '|' in e.name: continue
+   try:
+    if e.is_symlink(): continue
+    if not (e.is_dir(follow_symlinks=False) or e.is_file(follow_symlinks=False)): continue
+   except OSError: continue
+   if e.name not in seen: seen.add(e.name); names.append(e.name)
+ out={'names':names}
 elif action in ('search','index'):
  indexing=action=='index'; q='' if indexing else r.get('query',''); results=[]; seen=set(); count=0
  if '..' in q.split('/') or '\\' in q or any(ord(c)<32 for c in q): raise ValueError('query rejected')
