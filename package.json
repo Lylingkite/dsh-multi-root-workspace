@@ -1,11 +1,14 @@
 {
   "name": "@local/dsh-multi-root",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
-    "test": "node tests/client-delete.test.mjs && node tests/backspace.test.mjs && node tests/search.test.mjs && node tests/completion.test.mjs && node tests/primary-workspace.test.mjs && node tests/wsl.test.mjs && node tests/wsl-world.test.mjs && node tests/wsl-search.test.mjs && node tests/folder-summary.test.mjs && node tests/client-summary.test.mjs && node tests/summary-persistence.test.mjs"
+    "test": "node tests/client-delete.test.mjs && node tests/backspace.test.mjs && node tests/search.test.mjs && node tests/completion.test.mjs && node tests/primary-workspace.test.mjs && node tests/wsl.test.mjs && node tests/wsl-world.test.mjs && node tests/wsl-search.test.mjs && node tests/wsl-write.test.mjs && node tests/wsl-document-replace.test.mjs && node tests/wsl-document-cleanup.test.mjs && node tests/wsl-stat.test.mjs && node tests/folder-summary.test.mjs && node tests/client-summary.test.mjs && node tests/project-scan.test.mjs && node tests/document-model.test.mjs && node tests/project-document.test.mjs && node tests/cross-reference.test.mjs && node tests/summary-persistence.test.mjs && node tests/scan-baseline.test.mjs && node tests/documentation-patch.test.mjs && node tests/managed-document-io.test.mjs && node tests/document-conversation.test.mjs && node tests/document-baselines.test.mjs && node tests/document-review-ui.test.mjs && node tests/chat-document.test.mjs && node tests/wsl-chat-document.test.mjs"
   },
   "description": "Edit workspace folders and mention files across multiple roots",
   "private": true,
+  "dependencies": {
+    "@deepseek-ai/schemastery": "3.19.0"
+  },
   "type": "module",
   "exports": {
     ".": "./index.js",
@@ -17,6 +20,15 @@
     "index.js",
     "search.js",
     "folder-summary.js",
+    "document-model.js",
+    "project-document.js",
+    "project-scan.js",
+    "documentation-patch.js",
+    "documentation-proposals.js",
+    "document-conversation.js",
+    "chat-document.js",
+    "workspace-relations.js",
+    "document-baselines.js",
     "client.js",
     "cordis.patch.yml",
     "locale/*.json",
@@ -36,7 +48,8 @@
         "@deepseek-ai/dsh-client-ui-workspace",
         "@deepseek-ai/dsh-client-ui-context-menu",
         "@deepseek-ai/dsh-api-remotes",
-        "@deepseek-ai/dsh-client-ui-input-trigger"
+        "@deepseek-ai/dsh-client-ui-input-trigger",
+        "@deepseek-ai/dsh-client-ui-settings"
       ]
     }
   }

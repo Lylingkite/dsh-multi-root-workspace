@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import { createBaselineQueue } from '../document-baselines.js';
+const stop=new AbortController();
+const calls=[];
+let release;
+const wait=new Promise(r=>{release=r;});
+const queue=createBaselineQueue({signal:stop.signal,keyOf:p=>p.toLowerCase(),async generate(id,path,agent,signal){
+  calls.push([id,path,agent,signal]);
+  if (path==='/broken') throw new Error('scan failed');
+  await wait;
+  return {document:path+'/DSH-PROJECT.md'};
+}});
+queue.enqueue('workspace',['/New','/new','/broken','/removed']);
+assert.equal(queue.list('workspace').length,3);
+queue.retain('workspace',['/new','/broken']);
+const run=queue.start('workspace','session');
+assert.equal(queue.start('workspace','session'),undefined);
+assert.equal(queue.list('workspace')[0].state,'scanning');
+release(); await run;
+assert.deepEqual(calls.map(item=>item.slice(0,3)),[['workspace','/New','session'],['workspace','/broken','session']]);
+assert.deepEqual(queue.list('workspace').map(row=>row.state),['ready','failed']);
+assert.match(queue.list('workspace')[1].reason,/scan failed/);
+assert.equal(queue.start('workspace','session'),undefined,'failure is not retried on every turn');
+queue.finished('workspace','/broken','/broken/DSH-PROJECT.md');
+assert.equal(queue.list('workspace')[1].reason,undefined);
+assert.equal(queue.list('workspace')[1].state,'ready');
+stop.abort(); queue.enqueue('other',['/ignored']);
+assert.deepEqual(queue.list('other'),[]);
+// Repeat enqueue of an already-ready project must not schedule another scan.
+queue.enqueue('workspace',['/New','/broken']);
+queue.retain('workspace',['/New','/broken']);
+const settled=queue.start('workspace','session');
+await settled;
+assert.equal(calls.length,2,'ready rows are not rescanned');
+console.log('PASS: first-scan queue deduplicates, skips removed projects, reports failures and avoids repeated generation');
